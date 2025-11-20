@@ -282,74 +282,17 @@ with col3:
         st.caption("💡 Prices from `pricing_config.json`")
 
 # ==============================================================================
-# PRESET SCENARIOS
-# ==============================================================================
-
-st.sidebar.markdown("---")
-st.sidebar.subheader("📋 Quick Presets")
-
-if st.sidebar.button("🏢 Small Business"):
-    st.session_state.preset = {
-        'voice_calls_per_day': 20,
-        'voice_minutes_per_call': 5,
-        'voice_model': 'gpt_realtime_mini',
-        'voice_num_phones': 1,
-        'voice_min_replicas': 0,
-        'email_emails_per_day': 30,
-        'email_polling': 5,
-        'email_model': 'gpt_5_mini',
-        'email_pages': 2000,
-        'email_rag': True,
-        'email_hours': False
-    }
-    st.rerun()
-
-if st.sidebar.button("🏭 Medium Business"):
-    st.session_state.preset = {
-        'voice_calls_per_day': 100,
-        'voice_minutes_per_call': 7,
-        'voice_model': 'gpt_4o_realtime',
-        'voice_num_phones': 2,
-        'voice_min_replicas': 1,
-        'email_emails_per_day': 150,
-        'email_polling': 1,
-        'email_model': 'gpt_5_mini',
-        'email_pages': 10000,
-        'email_rag': True,
-        'email_hours': False
-    }
-    st.rerun()
-
-if st.sidebar.button("🏛️ Enterprise"):
-    st.session_state.preset = {
-        'voice_calls_per_day': 300,
-        'voice_minutes_per_call': 10,
-        'voice_model': 'gpt_4o_realtime',
-        'voice_num_phones': 5,
-        'voice_min_replicas': 3,
-        'email_emails_per_day': 500,
-        'email_polling': 1,
-        'email_model': 'gpt_5',
-        'email_pages': 30000,
-        'email_rag': True,
-        'email_hours': False
-    }
-    st.rerun()
-
 # ==============================================================================
 # SIDEBAR: VOICE AGENT CONFIGURATION
 # ==============================================================================
 
 st.sidebar.header("📞 Voice Agent Configuration")
 
-# Apply preset defaults if available
-preset = st.session_state.get('preset', {})
-
 voice_minutes_per_call = st.sidebar.slider(
     "Average minutes per call",
     min_value=1,
     max_value=30,
-    value=preset.get('voice_minutes_per_call', 5),
+    value=5,
     step=1,
     help="How long does an average customer call last?"
 )
@@ -358,7 +301,7 @@ voice_calls_per_day = st.sidebar.slider(
     "Number of calls per day",
     min_value=1,
     max_value=500,
-    value=preset.get('voice_calls_per_day', 50),
+    value=50,
     step=5,
     help="Average daily call volume"
 )
@@ -367,7 +310,7 @@ voice_calls_per_day = st.sidebar.slider(
 voice_model_options = list(pricing['voice_agent']['models'].keys())
 voice_model_names = {k: v['name'] for k, v in pricing['voice_agent']['models'].items()}
 
-default_voice_model = preset.get('voice_model', 'gpt_realtime_mini')
+default_voice_model = 'gpt_realtime_mini'
 voice_model_index = voice_model_options.index(default_voice_model) if default_voice_model in voice_model_options else 1
 
 voice_model_key = st.sidebar.radio(
@@ -383,7 +326,7 @@ voice_num_phones = st.sidebar.number_input(
     "Number of Swiss phone numbers",
     min_value=1,
     max_value=20,
-    value=preset.get('voice_num_phones', 1),
+    value=1,
     step=1,
     help="Each phone number costs CHF 0.80/month"
 )
@@ -392,7 +335,7 @@ voice_min_replicas = st.sidebar.slider(
     "Minimum container replicas",
     min_value=0,
     max_value=10,
-    value=preset.get('voice_min_replicas', 0),
+    value=0,
     step=1,
     help="0 = Serverless (cold starts, pay only when active)\n1+ = Always-on (no cold starts, higher cost)"
 )
@@ -419,7 +362,7 @@ email_emails_per_day = st.sidebar.slider(
     "Average emails per day",
     min_value=1,
     max_value=1000,
-    value=preset.get('email_emails_per_day', 50),
+    value=50,
     step=5,
     help="Number of customer emails received daily"
 )
@@ -428,7 +371,7 @@ email_emails_per_day = st.sidebar.slider(
 email_polling_interval = st.sidebar.select_slider(
     "Email check frequency (minutes)",
     options=[1, 2, 5, 10, 15, 30, 60],
-    value=preset.get('email_polling', 1),
+    value=1,
     help="How often to check for new emails"
 )
 
@@ -441,7 +384,7 @@ if email_polling_interval == 1 and email_emails_per_day > 200:
 # Operating Hours
 email_operating_hours = st.sidebar.checkbox(
     "Business hours only (8h-18h30, Mon-Fri)",
-    value=preset.get('email_hours', False),
+    value=False,
     help="Reduce polling to business hours to save costs"
 )
 
@@ -457,7 +400,7 @@ else:
 email_model_options = list(pricing['email_agent']['models'].keys())
 email_model_names = {k: v['name'] for k, v in pricing['email_agent']['models'].items()}
 
-default_email_model = preset.get('email_model', 'gpt_5_mini')
+default_email_model = 'gpt_5_mini'
 email_model_index = email_model_options.index(default_email_model) if default_email_model in email_model_options else 0
 
 email_model_key = st.sidebar.radio(
@@ -471,7 +414,7 @@ email_model_key = st.sidebar.radio(
 # Document Knowledge Base (RAG)
 email_enable_rag = st.sidebar.checkbox(
     "Enable PDF document search (RAG)",
-    value=preset.get('email_rag', True),
+    value=True,
     help="Allow agent to search repair manuals/documentation"
 )
 
@@ -480,7 +423,7 @@ if email_enable_rag:
         "Number of manual pages",
         min_value=0,
         max_value=50000,
-        value=preset.get('email_pages', 5000),
+        value=5000,
         step=100,
         help="Total pages across all repair manuals and guides"
     )
@@ -495,10 +438,6 @@ if email_enable_rag:
     st.sidebar.info(f"💡 RAG adds {rag_tokens} tokens context (~{int(rag_tokens * 0.75)} words ≈ 2-3 pages of manual text per email)")
 else:
     email_num_pages = 0
-
-# Clear preset after it's been applied
-if 'preset' in st.session_state:
-    del st.session_state.preset
 
 # ==============================================================================
 # TABS
