@@ -1,0 +1,160 @@
+{
+  "version": "2025-01",
+  "currency": "CHF",
+  "last_updated": "2025-01-20",
+  "region": "Sweden Central",
+  "notes": "All prices in CHF for Sweden Central region. Audio and LLM prices are per MILLION tokens.",
+
+  "shared": {
+    "blob_storage": {
+      "hot_tier_per_gb_month": 0.0147,
+      "read_operations_per_10k": 0.0042,
+      "write_operations_per_10k": 0.0518,
+      "data_retrieval_per_gb": 0.0,
+      "mb_per_page": 0.5,
+      "index_overhead_multiplier": 1.1,
+      "note": "Hot tier for frequently accessed manual pages. Shared by both voice and email agents."
+    }
+  },
+
+  "voice_agent": {
+    "acs": {
+      "phone_number_per_month": 0.80,
+      "inbound_per_minute": 0.0080,
+      "outbound_per_minute": 0.0186,
+      "call_recording_per_minute": 0.0013,
+      "audio_streaming_per_minute": 0.0026,
+      "note": "ACS pricing for Swiss geographic numbers and call handling"
+    },
+
+    "container_apps": {
+      "vcpu_active_per_second": 0.0000192,
+      "memory_gb_active_per_second": 0.0000024,
+      "idle_per_second": 0.0000024,
+      "requests_per_million": 0.319,
+      "free_vcpu_seconds_per_month": 180000,
+      "free_gb_seconds_per_month": 360000,
+      "free_requests_per_month": 2000000,
+      "vcpu_per_replica": 0.5,
+      "memory_gb_per_replica": 1.0,
+      "seconds_per_month": 2592000,
+      "note": "Container costs: active rate during calls, flat idle rate (0.0000024) for BOTH vCPU+memory when min replicas > 0"
+    },
+
+    "audio_conversion": {
+      "tokens_per_minute_audio": 2000,
+      "input_split": 0.4,
+      "output_split": 0.6,
+      "note": "2000 tokens per minute of audio. 40% customer talking (input), 60% AI responding (output)"
+    },
+
+    "models": {
+      "gpt_realtime": {
+        "name": "GPT-4 Realtime (Best quality)",
+        "text_input_per_m_tokens": 3.19,
+        "text_cached_input_per_m_tokens": 0.32,
+        "text_output_per_m_tokens": 12.74,
+        "audio_input_per_m_tokens": 25.47,
+        "audio_cached_input_per_m_tokens": 0.32,
+        "audio_output_per_m_tokens": 50.94,
+        "tokens_per_call": 2000,
+        "note": "Premium model. Audio: 2000 tokens/min. Text reasoning uses same model rates."
+      },
+      "gpt_realtime_mini": {
+        "name": "GPT-4o-mini Realtime (Recommended)",
+        "text_input_per_m_tokens": 0.48,
+        "text_cached_input_per_m_tokens": 0.05,
+        "text_output_per_m_tokens": 1.92,
+        "audio_input_per_m_tokens": 7.96,
+        "audio_cached_input_per_m_tokens": 0.24,
+        "audio_output_per_m_tokens": 15.92,
+        "tokens_per_call": 2000,
+        "note": "Best value. Audio: 2000 tokens/min. Excellent quality for most calls."
+      },
+      "gpt_4o_realtime": {
+        "name": "GPT-4o Realtime (Better quality)",
+        "text_input_per_m_tokens": 3.9793,
+        "text_cached_input_per_m_tokens": 1.9897,
+        "text_output_per_m_tokens": 15.9170,
+        "audio_input_per_m_tokens": 31.8341,
+        "audio_cached_input_per_m_tokens": 1.9897,
+        "audio_output_per_m_tokens": 63.6680,
+        "tokens_per_call": 2000,
+        "note": "Good balance. Audio: 2000 tokens/min. Higher quality than mini."
+      },
+      "gpt_4o_mini_realtime": {
+        "name": "GPT-4o Mini Realtime (Fast & economical)",
+        "text_input_per_m_tokens": 0.4776,
+        "text_cached_input_per_m_tokens": 0.2388,
+        "text_output_per_m_tokens": 1.9100,
+        "audio_input_per_m_tokens": 7.9586,
+        "audio_cached_input_per_m_tokens": 0.2388,
+        "audio_output_per_m_tokens": 15.9170,
+        "tokens_per_call": 2000,
+        "note": "Alternative mini model. Audio: 2000 tokens/min. Similar to gpt_realtime_mini."
+      }
+    }
+  },
+
+  "email_agent": {
+    "microsoft_365": {
+      "business_basic_per_month": 5.25,
+      "note": "Not counted as new cost if already owned by organization"
+    },
+
+    "azure_functions": {
+      "free_executions_per_month": 1000000,
+      "free_gb_seconds_per_month": 400000,
+      "execution_cost_per_million": 0.160,
+      "compute_cost_per_gb_second": 0.000013,
+      "memory_gb": 0.5,
+      "seconds_per_execution": 3,
+      "note": "Consumption plan pricing. Generous free tier covers most small/medium deployments."
+    },
+
+    "models": {
+      "gpt_5_mini": {
+        "name": "GPT-5-mini (Recommended)",
+        "input_per_m_tokens": 0.20,
+        "cached_input_per_m_tokens": 0.02,
+        "output_per_m_tokens": 1.60,
+        "note": "Best value for email processing. Excellent quality, low cost."
+      },
+      "gpt_5": {
+        "name": "GPT-5 (Best quality)",
+        "input_per_m_tokens": 1.00,
+        "cached_input_per_m_tokens": 0.10,
+        "output_per_m_tokens": 7.96,
+        "note": "Premium model. Use for complex technical emails requiring highest accuracy."
+      },
+      "gpt_4o": {
+        "name": "GPT-4o (Legacy - Better quality)",
+        "input_per_m_tokens": 3.9793,
+        "cached_input_per_m_tokens": 1.9897,
+        "output_per_m_tokens": 15.9170,
+        "note": "Previous generation. GPT-5-mini offers better value."
+      },
+      "gpt_4o_mini": {
+        "name": "GPT-4o-mini (Legacy - Fast & economical)",
+        "input_per_m_tokens": 0.4776,
+        "cached_input_per_m_tokens": 0.2388,
+        "output_per_m_tokens": 1.9100,
+        "note": "Previous generation. GPT-5-mini is newer and recommended."
+      }
+    },
+
+    "tokens": {
+      "base_input_tokens": 500,
+      "rag_additional_tokens": 1500,
+      "output_tokens": 500,
+      "note": "Base = email content + system prompt. RAG adds retrieved manual context (~1,125 words ≈ 2-3 pages). Output = AI response."
+    },
+
+    "operating_hours": {
+      "full_time_hours_per_month": 720,
+      "business_hours_per_month": 227.3,
+      "business_hours_definition": "8:00-18:30, Monday-Friday",
+      "note": "Business hours option reduces polling by 68%, significant cost savings for low-volume scenarios."
+    }
+  }
+}
