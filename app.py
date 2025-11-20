@@ -8,7 +8,7 @@ from datetime import datetime
 # LOAD PRICING CONFIGURATION
 # ==============================================================================
 
-@st.cache_data
+@st.cache_data(ttl=60)  # Cache expires after 60 seconds to pick up pricing updates
 def load_pricing():
     """Load pricing configuration from JSON file"""
     with open('pricing_config.json', 'r') as f:
@@ -93,14 +93,29 @@ def calculate_voice_cost(minutes_per_call, calls_per_day, model_key, num_phones,
         active_seconds = calls_per_month * (minutes_per_call * 60)
         idle_seconds = monthly_seconds - active_seconds
 
-        # Active costs
-        active_cost = min_replicas * active_seconds * (
-            (container_config['vcpu_per_replica'] * container_config['vcpu_active_per_second']) +
-            (container_config['memory_gb_per_replica'] * container_config['memory_gb_active_per_second'])
-        )
+        # Active costs (separate vCPU and memory for breakdown)
+        active_vcpu_cost = min_replicas * active_seconds * container_config['vcpu_per_replica'] * container_config['vcpu_active_per_second']
+        active_memory_cost = min_replicas * active_seconds * container_config['memory_gb_per_replica'] * container_config['memory_gb_active_per_second']
+        active_cost = active_vcpu_cost + active_memory_cost
 
-        # Idle costs (flat rate)
+        # Idle costs (flat rate for both vCPU + memory combined)
         idle_cost = min_replicas * idle_seconds * container_config['idle_per_second']
+
+        # Calculate separate vcpu and memory costs for breakdown
+        # For idle, we split the flat rate proportionally based on active rates
+        total_active_rate = (container_config['vcpu_per_replica'] * container_config['vcpu_active_per_second']) + \
+                           (container_config['memory_gb_per_replica'] * container_config['memory_gb_active_per_second'])
+        vcpu_active_rate = container_config['vcpu_per_replica'] * container_config['vcpu_active_per_second']
+        memory_active_rate = container_config['memory_gb_per_replica'] * container_config['memory_gb_active_per_second']
+
+        vcpu_idle_portion = (vcpu_active_rate / total_active_rate) if total_active_rate > 0 else 0.5
+        memory_idle_portion = (memory_active_rate / total_active_rate) if total_active_rate > 0 else 0.5
+
+        idle_vcpu_cost = idle_cost * vcpu_idle_portion
+        idle_memory_cost = idle_cost * memory_idle_portion
+
+        vcpu_cost = active_vcpu_cost + idle_vcpu_cost
+        memory_cost = active_memory_cost + idle_memory_cost
 
         # vCPU and Memory seconds for always-on
         vcpu_seconds = min_replicas * monthly_seconds
