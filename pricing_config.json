@@ -1,9 +1,10 @@
 {
   "version": "2025-01",
   "currency": "CHF",
-  "last_updated": "2025-01-20",
+  "last_updated": "2025-01-21",
   "region": "Sweden Central",
-  "notes": "All prices in CHF for Sweden Central region. Audio and LLM prices are per MILLION tokens.",
+  "deployment_options": ["Global", "EU Data Zone", "Sweden Regional"],
+  "notes": "All prices in CHF for Sweden Central region. Includes Global (cheapest), EU Data Zone (+10%), and Sweden Regional (+20%) deployments. Audio and LLM prices are per MILLION tokens. Only REALTIME models included for live voice calls.",
 
   "shared": {
     "blob_storage": {
@@ -49,41 +50,37 @@
     },
 
     "models": {
-      "gpt_realtime": {
-        "name": "GPT-4 Realtime (Best quality)",
-        "text_input_per_m_tokens": 3.19,
-        "text_cached_input_per_m_tokens": 0.32,
-        "text_output_per_m_tokens": 12.74,
-        "audio_input_per_m_tokens": 25.47,
-        "audio_cached_input_per_m_tokens": 0.32,
-        "audio_output_per_m_tokens": 50.94,
-        "tokens_per_call": 2000,
-        "note": "Premium model. Audio: 2000 tokens/min. Text reasoning uses same model rates."
-      },
-      "gpt_realtime_mini": {
-        "name": "GPT-4o-mini Realtime (Recommended)",
+      "gpt_realtime_mini_global": {
+        "name": "GPT-realtime-mini Global (Recommended - Cheapest)",
+        "deployment": "Global",
         "text_input_per_m_tokens": 0.48,
         "text_cached_input_per_m_tokens": 0.05,
         "text_output_per_m_tokens": 1.92,
         "audio_input_per_m_tokens": 7.96,
         "audio_cached_input_per_m_tokens": 0.24,
         "audio_output_per_m_tokens": 15.92,
+        "image_input_per_m_tokens": 0.64,
+        "image_cached_input_per_m_tokens": 0.07,
         "tokens_per_call": 2000,
-        "note": "Best value. Audio: 2000 tokens/min. Excellent quality for most calls."
+        "note": "BEST VALUE. Realtime voice calls with image support. Global deployment (cheapest). Audio: 2000 tokens/min."
       },
-      "gpt_4o_realtime": {
-        "name": "GPT-4o Realtime (Better quality)",
-        "text_input_per_m_tokens": 3.9793,
-        "text_cached_input_per_m_tokens": 1.9897,
-        "text_output_per_m_tokens": 15.9170,
-        "audio_input_per_m_tokens": 31.8341,
-        "audio_cached_input_per_m_tokens": 1.9897,
-        "audio_output_per_m_tokens": 63.6680,
+      "gpt_realtime_global": {
+        "name": "GPT-realtime Global (Best quality)",
+        "deployment": "Global",
+        "text_input_per_m_tokens": 3.19,
+        "text_cached_input_per_m_tokens": 0.32,
+        "text_output_per_m_tokens": 12.74,
+        "audio_input_per_m_tokens": 25.47,
+        "audio_cached_input_per_m_tokens": 0.32,
+        "audio_output_per_m_tokens": 50.94,
+        "image_input_per_m_tokens": 3.98,
+        "image_cached_input_per_m_tokens": 0.40,
         "tokens_per_call": 2000,
-        "note": "Good balance. Audio: 2000 tokens/min. Higher quality than mini."
+        "note": "PREMIUM MODEL. Realtime voice calls with image support. Global deployment only. Audio: 2000 tokens/min."
       },
-      "gpt_4o_mini_realtime": {
-        "name": "GPT-4o Mini Realtime (Fast & economical)",
+      "gpt_4o_mini_realtime_global": {
+        "name": "GPT-4o Mini Realtime Global (Fast & economical)",
+        "deployment": "Global",
         "text_input_per_m_tokens": 0.4776,
         "text_cached_input_per_m_tokens": 0.2388,
         "text_output_per_m_tokens": 1.9100,
@@ -91,7 +88,67 @@
         "audio_cached_input_per_m_tokens": 0.2388,
         "audio_output_per_m_tokens": 15.9170,
         "tokens_per_call": 2000,
-        "note": "Alternative mini model. Audio: 2000 tokens/min. Similar to gpt_realtime_mini."
+        "note": "GPT-4o Mini Realtime Preview 2024-12-17. Similar pricing to gpt_realtime_mini. Global deployment."
+      },
+      "gpt_4o_mini_realtime_eu": {
+        "name": "GPT-4o Mini Realtime EU (Data stays in EU)",
+        "deployment": "EU Data Zone",
+        "text_input_per_m_tokens": 0.5253,
+        "text_cached_input_per_m_tokens": 0.2627,
+        "text_output_per_m_tokens": 2.1010,
+        "audio_input_per_m_tokens": 8.7544,
+        "audio_cached_input_per_m_tokens": 0.2627,
+        "audio_output_per_m_tokens": 17.5087,
+        "tokens_per_call": 2000,
+        "note": "GPT-4o Mini Realtime Preview 2024-12-17. EU Data Zone deployment. ~10% more expensive than Global but data stays in EU."
+      },
+      "gpt_4o_mini_realtime_regional": {
+        "name": "GPT-4o Mini Realtime Regional (Sweden - Lowest latency)",
+        "deployment": "Sweden Regional",
+        "text_input_per_m_tokens": 0.5778,
+        "text_cached_input_per_m_tokens": 0.2889,
+        "text_output_per_m_tokens": 2.3111,
+        "audio_input_per_m_tokens": 9.6298,
+        "audio_cached_input_per_m_tokens": 0.2889,
+        "audio_output_per_m_tokens": 19.2596,
+        "tokens_per_call": 2000,
+        "note": "GPT-4o Mini Realtime Preview 2024-12-17. Sweden Regional deployment. ~21% more expensive than Global but lowest latency and data stays in Sweden."
+      },
+      "gpt_4o_realtime_global": {
+        "name": "GPT-4o Realtime Global (Better quality)",
+        "deployment": "Global",
+        "text_input_per_m_tokens": 3.9793,
+        "text_cached_input_per_m_tokens": 1.9897,
+        "text_output_per_m_tokens": 15.9170,
+        "audio_input_per_m_tokens": 31.8341,
+        "audio_cached_input_per_m_tokens": 1.9897,
+        "audio_output_per_m_tokens": 63.6680,
+        "tokens_per_call": 2000,
+        "note": "GPT-4o Realtime Preview 2024-12-17. Higher quality than mini. Global deployment."
+      },
+      "gpt_4o_realtime_eu": {
+        "name": "GPT-4o Realtime EU (Better quality, data in EU)",
+        "deployment": "EU Data Zone",
+        "text_input_per_m_tokens": 4.3772,
+        "text_cached_input_per_m_tokens": 2.1886,
+        "text_output_per_m_tokens": 17.5087,
+        "audio_input_per_m_tokens": 35.0175,
+        "audio_cached_input_per_m_tokens": 2.1886,
+        "audio_output_per_m_tokens": 70.0348,
+        "tokens_per_call": 2000,
+        "note": "GPT-4o Realtime Preview 2024-12-17. EU Data Zone deployment. ~10% more expensive than Global but data stays in EU."
+      },
+      "gpt_4o_realtime_regional": {
+        "name": "GPT-4o Realtime Regional (Better quality, Sweden)",
+        "deployment": "Sweden Regional",
+        "text_input_per_m_tokens": 4.8149,
+        "text_cached_input_per_m_tokens": 2.4075,
+        "text_output_per_m_tokens": 19.2596,
+        "audio_input_per_m_tokens": 38.5192,
+        "audio_cached_input_per_m_tokens": 2.4075,
+        "audio_output_per_m_tokens": 77.0383,
+        "tokens_per_call": 2000,
+        "note": "GPT-4o Realtime Preview 2024-12-17. Sweden Regional deployment. ~21% more expensive than Global but lowest latency and data stays in Sweden."
       }
     }
   },
@@ -99,7 +156,7 @@
   "email_agent": {
     "microsoft_365": {
       "business_basic_per_month": 5.25,
-      "note": "Not counted as new cost if already owned by organization"
+      "note": "Not counted as new cost if already owned by organization. Price confirmed from Azure pricing doc."
     },
 
     "azure_functions": {
@@ -113,33 +170,85 @@
     },
 
     "models": {
-      "gpt_5_mini": {
-        "name": "GPT-5-mini (Recommended)",
+      "gpt_5_mini_global": {
+        "name": "GPT-5-mini Global (Recommended - Cheapest)",
+        "deployment": "Global",
         "input_per_m_tokens": 0.20,
         "cached_input_per_m_tokens": 0.02,
         "output_per_m_tokens": 1.60,
-        "note": "Best value for email processing. Excellent quality, low cost."
+        "note": "BEST VALUE for email processing. Excellent quality, lowest cost. Global deployment."
       },
-      "gpt_5": {
-        "name": "GPT-5 (Best quality)",
+      "gpt_5_mini_eu": {
+        "name": "GPT-5-mini EU (Data stays in EU)",
+        "deployment": "EU Data Zone",
+        "input_per_m_tokens": 0.22,
+        "cached_input_per_m_tokens": 0.03,
+        "output_per_m_tokens": 1.76,
+        "note": "Best value for email processing. ~10% more expensive than Global but data stays in EU."
+      },
+      "gpt_5_global": {
+        "name": "GPT-5 Global (Best quality)",
+        "deployment": "Global",
         "input_per_m_tokens": 1.00,
         "cached_input_per_m_tokens": 0.10,
         "output_per_m_tokens": 7.96,
-        "note": "Premium model. Use for complex technical emails requiring highest accuracy."
+        "note": "PREMIUM MODEL. Use for complex technical emails requiring highest accuracy. Global deployment."
       },
-      "gpt_4o": {
-        "name": "GPT-4o (Legacy - Better quality)",
-        "input_per_m_tokens": 3.9793,
-        "cached_input_per_m_tokens": 1.9897,
-        "output_per_m_tokens": 15.9170,
-        "note": "Previous generation. GPT-5-mini offers better value."
+      "gpt_5_eu": {
+        "name": "GPT-5 EU (Best quality, data in EU)",
+        "deployment": "EU Data Zone",
+        "input_per_m_tokens": 1.10,
+        "cached_input_per_m_tokens": 0.11,
+        "output_per_m_tokens": 8.76,
+        "note": "Premium model. ~10% more expensive than Global but data stays in EU."
       },
-      "gpt_4o_mini": {
-        "name": "GPT-4o-mini (Legacy - Fast & economical)",
-        "input_per_m_tokens": 0.4776,
-        "cached_input_per_m_tokens": 0.2388,
-        "output_per_m_tokens": 1.9100,
-        "note": "Previous generation. GPT-5-mini is newer and recommended."
+      "gpt_4o_global": {
+        "name": "GPT-4o Global (Legacy - Good quality)",
+        "deployment": "Global",
+        "input_per_m_tokens": 1.98963,
+        "cached_input_per_m_tokens": 0.9949,
+        "output_per_m_tokens": 7.9586,
+        "note": "Previous generation (Nov 2024). GPT-5-mini offers better value. Global deployment."
+      },
+      "gpt_4o_eu": {
+        "name": "GPT-4o EU (Legacy - Good quality, data in EU)",
+        "deployment": "EU Data Zone",
+        "input_per_m_tokens": 2.18859,
+        "cached_input_per_m_tokens": 1.0943,
+        "output_per_m_tokens": 8.7544,
+        "note": "Previous generation (Nov 2024). GPT-5-mini offers better value. EU Data Zone deployment."
+      },
+      "gpt_4o_regional": {
+        "name": "GPT-4o Regional (Legacy - Good quality, Sweden)",
+        "deployment": "Sweden Regional",
+        "input_per_m_tokens": 2.40745,
+        "cached_input_per_m_tokens": 1.2042,
+        "output_per_m_tokens": 9.6298,
+        "note": "Previous generation (Nov 2024). GPT-5-mini offers better value. Sweden Regional deployment."
+      },
+      "gpt_4o_mini_global": {
+        "name": "GPT-4o-mini Global (Legacy - Economical)",
+        "deployment": "Global",
+        "input_per_m_tokens": 0.11938,
+        "cached_input_per_m_tokens": 0.0597,
+        "output_per_m_tokens": 0.4776,
+        "note": "Previous generation (Jul 2024). GPT-5-mini is newer and recommended. Global deployment."
+      },
+      "gpt_4o_mini_eu": {
+        "name": "GPT-4o-mini EU (Legacy - Economical, data in EU)",
+        "deployment": "EU Data Zone",
+        "input_per_m_tokens": 0.13132,
+        "cached_input_per_m_tokens": 0.0661,
+        "output_per_m_tokens": 0.5253,
+        "note": "Previous generation (Jul 2024). GPT-5-mini is newer and recommended. EU Data Zone deployment."
+      },
+      "gpt_4o_mini_regional": {
+        "name": "GPT-4o-mini Regional (Legacy - Economical, Sweden)",
+        "deployment": "Sweden Regional",
+        "input_per_m_tokens": 0.13132,
+        "cached_input_per_m_tokens": 0.0725,
+        "output_per_m_tokens": 0.5253,
+        "note": "Previous generation (Jul 2024). GPT-5-mini is newer and recommended. Sweden Regional deployment."
       }
     },
 
@@ -154,7 +263,7 @@
       "full_time_hours_per_month": 720,
       "business_hours_per_month": 227.3,
       "business_hours_definition": "8:00-18:30, Monday-Friday",
-      "note": "Business hours option reduces polling by 68%, significant cost savings for low-volume scenarios."
+      "note": "Email agent already polls during business hours only. This reduces execution count by 68% but stays within free tier (no cost impact)."
     }
   }
 }

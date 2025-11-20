@@ -39,7 +39,7 @@ def calculate_blob_storage_cost(num_pages, enable_rag):
     }
 
 
-def calculate_voice_cost(minutes_per_call, calls_per_day, model_key, num_phones, min_replicas):
+def calculate_voice_cost(minutes_per_call, calls_per_day, model_key, num_phones, min_replicas, business_hours_only=False):
     """Calculate voice agent monthly costs"""
 
     # Load pricing
@@ -47,6 +47,7 @@ def calculate_voice_cost(minutes_per_call, calls_per_day, model_key, num_phones,
     container_config = pricing['voice_agent']['container_apps']
     model = pricing['voice_agent']['models'][model_key]
     audio_conversion = pricing['voice_agent']['audio_conversion']
+    operating_hours_config = pricing['email_agent']['operating_hours']
 
     # Volume calculations
     calls_per_month = calls_per_day * 30
@@ -86,8 +87,15 @@ def calculate_voice_cost(minutes_per_call, calls_per_day, model_key, num_phones,
         container_cost = vcpu_cost + memory_cost + request_cost
 
     else:
-        # Always-on: pay 24/7 (active rate when handling calls, idle rate when not)
-        monthly_seconds = container_config['seconds_per_month']
+        # Always-on: pay for operating hours (business hours or 24/7)
+        if business_hours_only:
+            # Business hours: ~227.3 hours/month
+            operating_hours = operating_hours_config['business_hours_per_month']
+        else:
+            # Full time: 720 hours/month (30 days × 24 hours)
+            operating_hours = operating_hours_config['full_time_hours_per_month']
+
+        monthly_seconds = operating_hours * 3600  # Convert hours to seconds
 
         # Active time: during calls
         active_seconds = calls_per_month * (minutes_per_call * 60)
@@ -124,7 +132,11 @@ def calculate_voice_cost(minutes_per_call, calls_per_day, model_key, num_phones,
         # Request cost (NEW)
         # Always-on: health checks + actual requests
         # Azure does ~1 health check per minute
-        health_checks_per_month = 30 * 24 * 60  # 43,200/month
+        if business_hours_only:
+            health_checks_per_month = operating_hours * 60  # 1 per minute during operating hours
+        else:
+            health_checks_per_month = 30 * 24 * 60  # 43,200/month for 24/7
+
         actual_requests = calls_per_month * 2
         requests = health_checks_per_month + actual_requests
         if requests > container_config['free_requests_per_month']:
@@ -173,6 +185,7 @@ def calculate_voice_cost(minutes_per_call, calls_per_day, model_key, num_phones,
         'vcpu_seconds': vcpu_seconds,  # NEW
         'gb_seconds': gb_seconds,  # NEW
         'requests': requests,  # NEW
+        'business_hours': business_hours_only,  # NEW
         'breakdown': {
             'phone_cost': phone_cost,
             'acs_cost': acs_call_cost,
@@ -351,6 +364,17 @@ else:
     )
     st.sidebar.info(f"⚡ Always-on: {voice_min_replicas} replica(s) running 24/7. Base cost ~CHF {monthly_cost:.2f}/month + usage costs.")
 
+# Operating Hours
+voice_operating_hours = st.sidebar.checkbox(
+    "Business hours only (8h-18h30, Mon-Fri)",
+    value=False,
+    help="Run voice agent only during business hours to reduce costs (mainly affects always-on mode)"
+)
+
+if voice_operating_hours:
+    operating_hours = pricing['email_agent']['operating_hours']
+    st.sidebar.caption(f"💡 Voice agent active during business hours (~{operating_hours['business_hours_per_month']:.1f} hours/month vs 720 for 24/7)")
+
 # ==============================================================================
 # SIDEBAR: EMAIL AGENT CONFIGURATION
 # ==============================================================================
@@ -458,7 +482,8 @@ with tab1:
         voice_calls_per_day,
         voice_model_key,
         voice_num_phones,
-        voice_min_replicas
+        voice_min_replicas,
+        voice_operating_hours
     )
 
     # Main metrics
@@ -471,6 +496,13 @@ with tab1:
         st.metric("📊 Monthly Calls", f"{voice_results['calls']:,}")
     with col4:
         st.metric("⏱️ Total Minutes", f"{voice_results['minutes']:,}")
+
+    # Operating hours info
+    if voice_results['business_hours'] and voice_min_replicas > 0:
+        operating_hours_config = pricing['email_agent']['operating_hours']
+        hours_def = operating_hours_config['business_hours_definition']
+        hours_saved = operating_hours_config['full_time_hours_per_month'] - operating_hours_config['business_hours_per_month']
+        st.info(f"⏰ Voice agent operates during business hours only ({hours_def}) - Saves {hours_saved:.1f} hours/month vs 24/7 (applies to always-on mode)")
 
     # Cost breakdown pie chart
     st.subheader("📊 Cost Distribution")
@@ -521,7 +553,8 @@ with tab1:
             voice_calls_per_day,
             model_key_temp,
             voice_num_phones,
-            voice_min_replicas
+            voice_min_replicas,
+            voice_operating_hours
         )
         model_comparison.append({
             "Model": model_data['name'],
@@ -588,7 +621,8 @@ with tab1:
             voice_calls_per_day,
             voice_model_key,
             voice_num_phones,
-            replicas
+            replicas,
+            voice_operating_hours
         )
 
         config_name = "Serverless (0 replicas)" if replicas == 0 else f"Always-on ({replicas} replica{'s' if replicas > 1 else ''})"
@@ -770,7 +804,8 @@ with tab3:
     # Calculate all costs
     voice_results = calculate_voice_cost(
         voice_minutes_per_call, voice_calls_per_day,
-        voice_model_key, voice_num_phones, voice_min_replicas
+        voice_model_key, voice_num_phones, voice_min_replicas,
+        voice_operating_hours
     )
 
     email_results = calculate_email_cost(
@@ -909,7 +944,8 @@ with tab3:
     if voice_min_replicas >= 2:
         temp_results = calculate_voice_cost(
             voice_minutes_per_call, voice_calls_per_day,
-            voice_model_key, voice_num_phones, 1
+            voice_model_key, voice_num_phones, 1,
+            voice_operating_hours
         )
         savings = voice_results['total'] - temp_results['total']
         recommendations.append({
